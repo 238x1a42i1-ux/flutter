@@ -1,0 +1,56 @@
+Question 17: Show the start and end date in the date picker. But the end date should be 29 days ago from the start date. What will be your approach to getting this problem statement?
+Hint 1:- Use the date picker library for selecting the start and end date.
+Hint 2:- Add the logic which is end data should be 29 days ago from the start date.
+source code:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date Picker Example</title>
+
+  <!-- Flatpickr CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+  />
+</head>
+<body style="font-family: Arial; padding: 30px;">
+
+  <h2>Date Picker Example</h2>
+
+  <label for="startDate">Start Date:</label>
+  <input id="startDate" type="text" placeholder="Select start date" />
+
+  <br><br>
+
+  <label for="endDate">End Date (29 days earlier):</label>
+  <input id="endDate" type="text" placeholder="End date auto-calculated" readonly />
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script>
+    // Initialize both date pickers
+    const startPicker = flatpickr("#startDate", {
+      dateFormat: "Y-m-d",
+      onChange: function(selectedDates) {
+        if (selectedDates.length > 0) {
+          const startDate = selectedDates[0];
+          // Calculate end date: 29 days earlier
+          const endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() - 29);
+
+          // Update the end date picker
+          endPicker.setDate(endDate, true);
+        }
+      }
+    });
+
+    const endPicker = flatpickr("#endDate", {
+      dateFormat: "Y-m-d",
+      clickOpens: false // prevent manual change
+    });
+  </script>
+</body>
+</html>
