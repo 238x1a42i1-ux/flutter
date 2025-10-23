@@ -1,0 +1,151 @@
+Question 09: Build a Flutter application with two screens, "About" and "Home". Use a dedicated routing class and allow the background color of the Scaffold and AppBar in the About screen to be set from the Home screen.
+source code:
+import 'package:flutter/material.dart';
+void main() {
+  runApp(MyApp());
+}
+
+// Dedicated Router class with named routes
+class AppRouter {
+  static const String home = '/';
+  static const String about = '/about';
+
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case home:
+        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case about:
+        final args = settings.arguments as AboutScreenArguments;
+        return MaterialPageRoute(
+          builder: (_) => AboutScreen(backgroundColor: args.backgroundColor),
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(child: Text('No route defined for ${settings.name}')),
+          ),
+        );
+    }
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Routing with Color Passing',
+      debugShowCheckedModeBanner: false,
+      initialRoute: AppRouter.home,
+      onGenerateRoute: AppRouter.generateRoute,
+    );
+  }
+}
+
+// Arguments holder for About screen
+class AboutScreenArguments {
+  final Color backgroundColor;
+  AboutScreenArguments({required this.backgroundColor});
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Color selectedColor = Colors.blue; // default color
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Screen'),
+        backgroundColor: selectedColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Text(
+              "Select background color for About Screen:",
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+
+            // Row of buttons for color selection
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _colorCircle(Colors.blue),
+                _colorCircle(Colors.green),
+                _colorCircle(Colors.red),
+                _colorCircle(Colors.orange),
+              ],
+            ),
+
+            SizedBox(height: 40),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.about,
+                  arguments: AboutScreenArguments(backgroundColor: selectedColor),
+                );
+              },
+              child: Text('Go to About Screen'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _colorCircle(Color color) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedColor = color;
+        });
+      },
+      child: CircleAvatar(
+        radius: 25,
+        backgroundColor: color,
+        child: selectedColor == color
+            ? Icon(Icons.check, color: Colors.white)
+            : null,
+      ),
+    );
+  }
+}
+
+class AboutScreen extends StatelessWidget {
+  final Color backgroundColor;
+
+  AboutScreen({required this.backgroundColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('About Screen'),
+        backgroundColor: backgroundColor,
+      ),
+      backgroundColor: backgroundColor,
+      body: Center(
+        child: Text(
+          'This is the About Screen',
+          style: TextStyle(
+            fontSize: 24,
+            color: useWhiteForeground(backgroundColor) ? Colors.white : Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Utility to decide text color based on background brightness
+  bool useWhiteForeground(Color backgroundColor) {
+    return ThemeData.estimateBrightnessForColor(backgroundColor) == Brightness.dark;
+  }
+}
