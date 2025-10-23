@@ -1,0 +1,48 @@
+Question 20: Is there any way to rotate an image clock clockwise and anti-clockwise by clicking on a single button?
+Hint 1:- Use RotationTransition widget for rotation purposes.
+Hint 2:- Add a button for controlling image rotation. 
+source code:
+import 'package:flutter/material.dart';
+import 'dart:math' as math;
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: RotatingClock(),
+  ));
+}
+
+class RotatingClock extends StatefulWidget {
+  @override
+  _RotatingClockState createState() => _RotatingClockState();
+}
+
+class _RotatingClockState extends State<RotatingClock>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  bool _isClockwise = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the animation controller
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 5),
+    );
+
+    // Start rotating initially
+    _controller.repeat();
+  }
+
+  void _toggleRotationDirection() {
+    setState(() {
+      _isClockwise = !_isClockwise;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispos
