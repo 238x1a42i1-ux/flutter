@@ -1,0 +1,78 @@
+Question 10: Create a Flutter application using Riverpod state management where pressing a button changes the background color of the appBar and Scaffold, as well as plays one of 10 music notes. 
+source code:
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:audioplayers/audioplayers.dart';
+
+// Provider to hold current color index
+final colorIndexProvider = StateProvider<int>((ref) => 0);
+
+// List of colors to cycle through
+final List<Color> colors = [
+  Colors.red,
+  Colors.green,
+  Colors.blue,
+  Colors.orange,
+  Colors.purple,
+  Colors.teal,
+  Colors.amber,
+  Colors.cyan,
+  Colors.indigo,
+  Colors.pink,
+];
+
+// Provider to hold current note index
+final noteIndexProvider = StateProvider<int>((ref) => 0);
+
+void main() {
+  runApp(ProviderScope(child: MyApp()));
+}
+
+class MyApp extends ConsumerWidget {
+  final AudioCache audioCache = AudioCache(prefix: 'assets/sounds/');
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorIndex = ref.watch(colorIndexProvider);
+    final currentColor = colors[colorIndex];
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Riverpod Music & Color App'),
+          backgroundColor: currentColor,
+        ),
+        backgroundColor: currentColor.withOpacity(0.3),
+        body: Center(
+          child: ElevatedButton(
+            child: Text(
+              "Play Note & Change Color",
+              style: TextStyle(fontSize: 18),
+            ),
+            onPressed: () async {
+              // Update color index
+              int newColorIndex = (colorIndex + 1) % colors.length;
+              ref.read(colorIndexProvider.notifier).state = newColorIndex;
+
+              // Update note index
+              final noteIndex = ref.read(noteIndexProvider);
+              int newNoteIndex = (noteIndex + 1) % 10;
+              ref.read(noteIndexProvider.notifier).state = newNoteIndex;
+
+              // Play sound note (note1.wav to note10.wav)
+              String noteFile = 'note${newNoteIndex + 1}.wav';
+
+              try {
+                await audioCache.play(noteFile);
+              } catch (e) {
+                print("Error playing sound: $e");
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
