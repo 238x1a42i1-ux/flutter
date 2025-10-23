@@ -1,0 +1,82 @@
+Question 8: Create a Flutter app with two screens, each displaying a numerical value in its user interface. Upon pressing a floating action button on the home page, the value of the number will increase for both screens. Add navigation to switch between the two screens to observe the results.
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: NumberHomeScreen(),
+  ));
+}
+
+class NumberHomeScreen extends StatefulWidget {
+  @override
+  _NumberHomeScreenState createState() => _NumberHomeScreenState();
+}
+
+class _NumberHomeScreenState extends State<NumberHomeScreen> {
+  int _number = 0;
+
+  void _incrementNumber() {
+    setState(() {
+      _number++;
+    });
+  }
+
+  void _navigateToSecondScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NumberSecondScreen(number: _number),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Screen'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.navigate_next),
+            tooltip: 'Go to Second Screen',
+            onPressed: _navigateToSecondScreen,
+          ),
+        ],
+      ),
+      body: Center(
+        child: Text(
+          'Number: $_number',
+          style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementNumber,
+        child: Icon(Icons.add),
+        tooltip: 'Increment Number',
+      ),
+    );
+  }
+}
+
+class NumberSecondScreen extends StatelessWidget {
+  final int number;
+
+  NumberSecondScreen({required this.number});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Second Screen'),
+      ),
+      body: Center(
+        child: Text(
+          'Number: $number',
+          style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
